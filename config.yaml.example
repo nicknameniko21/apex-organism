@@ -1,0 +1,77 @@
+# ============================================
+# APEX ORGANISM v0.1 - Configuration Template
+# ============================================
+# Copy this file to config.yaml and fill in your credentials:
+#   cp config.yaml.example config.yaml
+#
+# NEVER commit config.yaml to git (it's in .gitignore)
+
+oracle:
+  host: "YOUR_ORACLE_SERVER_IP"
+  port: 1521
+  service_name: "XEPDB1"
+  username: "apex_user"
+  password: "YOUR_PASSWORD"
+  enabled: false
+
+ai_services:
+  perplexity:
+    enabled: false
+    api_key: "pplx-YOUR_KEY"
+    base_url: "https://api.perplexity.ai"
+    model: "sonar-pro"
+    role: "Research Department"
+
+  deepseek:
+    enabled: false
+    api_key: "sk-YOUR_KEY"
+    base_url: "https://api.deepseek.com"
+    model: "deepseek-chat"
+    role: "Engineering Lab"
+
+  gemini:
+    enabled: false
+    api_key: "YOUR_KEY"
+    base_url: "https://generativelanguage.googleapis.com"
+    model: "gemini-2.0-flash"
+    role: "Vision System"
+
+  minimax:
+    enabled: false
+    api_key: "YOUR_KEY"
+    base_url: "https://api.minimax.chat"
+    model: "abab6.5-chat"
+    role: "Creation Studio"
+
+  kimi:
+    enabled: false
+    api_key: "YOUR_KEY"
+    base_url: "https://api.moonshot.cn/v1"
+    model: "moonshot-v1-128k"
+    role: "Memory Bank"
+
+  openai_compatible:
+    enabled: false
+    api_key: "YOUR_KEY"
+    base_url: "https://api.openai.com/v1"
+    model: "gpt-4.1-mini"
+    role: "General Assistant"
+
+apex:
+  name: "APEX"
+  version: "0.1.0"
+  autonomous_mode: false
+  money_gate:
+    enabled: true
+    max_auto_cost_usd: 1.00
+  swarm:
+    max_agents: 20
+  evolution:
+    auto_learn: true
+    capability_storage: "plugins/"
+
+dashboard:
+  enabled: true
+  host: "0.0.0.0"
+  port: 8080
+  auto_open_browser: false

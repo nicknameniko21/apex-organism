@@ -1,6 +1,5 @@
-# Copyright (c) 2026 AI Center Plus. All Rights Reserved.
-# This software is proprietary and confidential. See LICENSE file.
-# Unauthorized copying, distribution, or modification is strictly prohibited.
+# Copyright (c) 2026 AI Center Plus.
+# Licensed under the MIT License. See LICENSE file for details.
 
 """
 APEX ORGANISM - Core Orchestrator

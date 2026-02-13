@@ -62,3 +62,7 @@ Edit `config.yaml` to:
 - **Money Gate**: All paid operations require approval above threshold
 - **Web Dashboard**: Real-time monitoring and control via browser
 - **Natural Language**: Just speak naturally, APEX figures it out
+
+## License
+
+Released under the MIT License. See `LICENSE` for details.

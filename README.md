@@ -40,6 +40,13 @@ python apex_main.py --dashboard
 # Open http://localhost:8080
 ```
 
+### Android One-Tap (Termux)
+```bash
+# Install Termux, clone this repo, then run:
+bash scripts/android_oneclick.sh
+# The dashboard auto-opens at http://127.0.0.1:8080; add it to your home screen.
+```
+
 ### Oracle Cloud Deployment
 ```bash
 bash scripts/deploy_oracle.sh
@@ -47,7 +54,7 @@ bash scripts/deploy_oracle.sh
 
 ## Configuration
 
-Edit `config.yaml` to:
+`config.yaml` is created automatically from `config.yaml.example` on first run. Edit it to:
 - Connect to Oracle Database (or use SQLite fallback)
 - Enable AI organs (Perplexity, DeepSeek, Gemini, MiniMax, Kimi)
 - Set spending limits via Money Gate

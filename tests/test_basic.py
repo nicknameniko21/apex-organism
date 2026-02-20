@@ -11,6 +11,7 @@ import asyncio
 import pytest
 import sys
 import os
+from apex_main import load_config
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -92,6 +93,21 @@ def test_intelligence_calculation(config):
 
     new_intelligence = apex.calculate_intelligence()
     assert new_intelligence > base_intelligence
+
+
+def test_load_config_autocreates(tmp_path):
+    """Ensure config is created from example when missing."""
+    example = tmp_path / "config.yaml.example"
+    example.write_text(
+        "apex:\n  version: \"0.1.0\"\n"
+        "oracle:\n  enabled: false\n"
+        "ai_services:\n  deepseek:\n    enabled: false\n"
+    )
+    config_file = tmp_path / "config.yaml"
+    cfg = load_config(str(config_file), example_path=str(example))
+
+    assert config_file.exists()
+    assert cfg.get("apex", {}).get("version") == "0.1.0"
 
 
 if __name__ == "__main__":

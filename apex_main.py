@@ -18,8 +18,11 @@ import asyncio
 import sys
 import os
 import signal
+import shutil
 import yaml
 import click
+import webbrowser
+import threading
 from rich.console import Console
 from rich.panel import Panel
 from rich.text import Text
@@ -48,16 +51,47 @@ BANNER = r"""
 """
 
 
-def load_config(config_path: str = "config.yaml") -> dict:
-    """Load configuration from YAML file."""
-    config_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), config_path)
+def load_config(config_path: str = "config.yaml", example_path: str = "config.yaml.example") -> dict:
+    """Load configuration from YAML file, creating defaults when missing."""
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    config_file = config_path if os.path.isabs(config_path) else os.path.join(base_dir, config_path)
+    example_file = example_path if os.path.isabs(example_path) else os.path.join(base_dir, example_path)
+
+    default_config = {
+        "oracle": {"enabled": False},
+        "ai_services": {
+            "perplexity": {"enabled": False, "api_key": "", "base_url": "https://api.perplexity.ai", "model": "sonar-pro", "role": "Research Department"},
+            "deepseek": {"enabled": False, "api_key": "", "base_url": "https://api.deepseek.com", "model": "deepseek-chat", "role": "Engineering Lab"},
+            "gemini": {"enabled": False, "api_key": "", "base_url": "https://generativelanguage.googleapis.com", "model": "gemini-2.0-flash", "role": "Vision System"},
+            "minimax": {"enabled": False, "api_key": "", "base_url": "https://api.minimax.chat", "model": "abab6.5-chat", "role": "Creation Studio"},
+            "kimi": {"enabled": False, "api_key": "", "base_url": "https://api.moonshot.cn/v1", "model": "moonshot-v1-128k", "role": "Memory Bank"},
+            "openai_compatible": {"enabled": False, "api_key": "", "base_url": "https://api.openai.com/v1", "model": "gpt-4.1-mini", "role": "General Assistant"},
+        },
+        "apex": {
+            "name": "APEX",
+            "version": "0.1.0",
+            "autonomous_mode": False,
+            "money_gate": {"enabled": True, "max_auto_cost_usd": 1.00},
+            "swarm": {"max_agents": 20},
+            "evolution": {"auto_learn": True, "capability_storage": "plugins/"},
+        },
+        "dashboard": {"enabled": True, "host": "0.0.0.0", "port": 8080, "auto_open_browser": True},
+    }
+
     if not os.path.exists(config_file):
-        console.print(f"[red]Config file not found: {config_file}[/red]")
-        console.print("[yellow]Creating default config.yaml...[/yellow]")
-        return {}
+        console.print(f"[yellow]Config file not found: {config_file}. Creating defaults...[/yellow]")
+        if os.path.exists(example_file):
+            shutil.copy(example_file, config_file)
+            console.print("[green]Default config created from config.yaml.example[/green]")
+        else:
+            with open(config_file, "w") as f:
+                yaml.safe_dump(default_config, f)
+            console.print("[green]Default config created with safe defaults[/green]")
 
     with open(config_file, "r") as f:
-        return yaml.safe_load(f)
+        loaded = yaml.safe_load(f) or {}
+
+    return loaded or default_config
 
 
 async def run_cli(apex: ApexOrganism):
@@ -107,11 +141,26 @@ async def run_cli(apex: ApexOrganism):
             console.print("[green]APEX remains stable. Try rephrasing your request.[/green]")
 
 
+def _auto_open_dashboard(apex: ApexOrganism):
+    """Open dashboard URL in the default browser when enabled."""
+    cfg = apex.config.get("dashboard", {})
+    if not cfg.get("auto_open_browser"):
+        return
+
+    host = cfg.get("host", "0.0.0.0")
+    port = cfg.get("port", 8080)
+    host_for_url = "127.0.0.1" if host == "0.0.0.0" else host
+    url = f"http://{host_for_url}:{port}"
+
+    threading.Thread(target=webbrowser.open, args=(url,), daemon=True).start()
+
+
 async def run_api(apex: ApexOrganism):
     """Run the FastAPI server for dashboard and API access."""
     from dashboard.api_server import create_app
 
     app = create_app(apex)
+    _auto_open_dashboard(apex)
 
     import uvicorn
     config = uvicorn.Config(
